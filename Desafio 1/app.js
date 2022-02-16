@@ -7,7 +7,7 @@ class User{
     }
 
     getFullName(){
-        return `${this.firstName +' '+ this.lastName}`;
+        return `${this.firstName} ${this.lastName}`;
     }
     addMascota(petName){
         this.pets.push(petName);
@@ -17,7 +17,6 @@ class User{
     }
     addBook(name, author){
         this.books.push({name, author});
-        return this.books;
     }
     getBookNames(){
         let authorsArray = [];
@@ -37,8 +36,8 @@ user1.addMascota('Perro', 'Gato');
 
 console.log('Contador de Mascotas', user1.countMascotas());
 
-console.log('Libros:', user1.addBook('El señor de las moscas', 'William Golding'));
-console.log(user1.addBook( 'Fundacion', 'Isaac Asimov'))
+user1.addBook('El señor de las moscas', 'William Golding');
+user1.addBook( 'Fundacion', 'Isaac Asimov');
 
 console.log('Nombre de los autores:', user1.getBookNames());
 
@@ -56,6 +55,6 @@ user2.addMascota('Tigre');
 
 console.log('Contador de Mascotas:', user2.countMascotas());
 
-console.log('Libros:', user2.addBook('Libro 1 - Nombre', 'Libro 1 - Autor'));
+user2.addBook('Libro 1 - Nombre', 'Libro 1 - Autor');
 
 console.log('Nombre de los autores:', user2.getBookNames());
