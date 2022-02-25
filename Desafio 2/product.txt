@@ -1,0 +1,5 @@
+{
+    title: 'Escuadra',
+    price: 123.45,
+    id: 1
+}
