@@ -1,78 +1,109 @@
 class Container{
-    constructor(title){
-        this.title = title;
+    constructor(route){
+        this.route = route;
     }
     save(file){
-        const route = './product.txt';
-        let id = 0
-        fs.readFile(route, 'utf-8', (err, data) => {
-            let yamil = JSON.parse(data);
-            id = yamil.id
-            if(id === yamil.id){
-                id++
-            }
-            if(err) throw new Error(`No pudimos leer archivo: ${err.message}`);
+        let readFile;
+        try{
+            let id = 1;
+            readFile = this.getAll().then(async value => {
+                let aux = value;
+                for(let x of aux){
+                    if(id === x.id){
+                        id++;
+                    }
+                }
+                await fs.promises.writeFile(this.route, ' ');
 
-            const info = {
-                title: fs.statSync(route).title = file.title,
-                price: fs.statSync(route).price = file.price,
-                id: fs.statSync(route).id = id
-            }
+                file.id = id;
 
-            fs.appendFile(route, JSON.stringify(info, null, 2), err => {
-                if (err) throw new Error(`Todo mal ${err.message}`);
+                value = {...file};
+                for(let y of aux){
+                    if(y.id === value.id){
+                        value.id++;
+                    }   
+                }
+                let array = [].concat(aux, value);
+                
+                await fs.promises.appendFile(this.route, JSON.stringify(array, null, 2));
+                return id;
             })
-            return id;
-        })
+        }catch(error){
+            console.log("Hubo un error al leer el archivo: ", error);
+        }
+        return readFile;
     }
     getById(id){
-        fs.readFile(route, 'utf-8', (err, data) => {
-            let yamil = JSON.parse(data);
-            let resultado = 0
-            if(id === yamil.id){
-                resultado = yamil
-                console.log(yamil);
-            }else{
-                resultado = null
-                console.log(null);
-            }
-            if(err) throw new Error(`No pudimos leer archivo: ${err.message}`);
-            return resultado
-        })
+        let found;
+        try{
+            found = this.getAll().then(async value => {
+                found = value.find(element => element.id === id);
+                if(found === null || found === undefined){
+                    return null;
+                }else{
+                    return found;
+                }
+            })
+        }catch(error){
+            console.log("Hubo un error al leer el archivo: ",error);
+        }
+        return found;
     }
     getAll(){
-        let array = []        
-        fs.readFile(route, 'utf-8', (err, data) => {
-            array.push(data)
-            if(err) throw new Error(`No pudimos leer archivo: ${err.message}`);
-            return array
-        })
+        async function read(route){
+            let readFile;
+            try{
+                readFile = JSON.parse(await fs.promises.readFile(route, 'utf-8'));
+            }catch(error){
+                console.log("Hubo un error al leer el archivo: ",error);
+            }
+            return readFile;
+        }
+        return read(this.route);
     }
-    deleteById(id){   
-        fs.readFile(route, 'utf-8', (err, data) => {
-            if(err) throw new Error(`No pudimos leer archivo: ${err.message}`);
-
-            fs.writeFileSync(route, '')
-            return 0
-        })
+    deleteById(id){
+        try{
+            this.getAll().then(async value => {
+                for(let x of value){
+                    if(id === x.id){
+                        let findId = value.indexOf(x);
+                        value.splice(findId, 1);
+                        await fs.promises.writeFile(this.route, JSON.stringify(value, null, 2), error => {
+                            console.log("Hubo un error al leer el archivo: ", error);
+                        })
+                    }
+                }
+            })
+        }catch(error){
+            console.log("Hubo un error al leer el archivo: ",error);
+        }
     }
     deleteAll(){
-        fs.writeFileSync(route, '')
+        async function deleteItems(route){
+            try{
+                await fs.promises.writeFile(route, ' ');
+            }catch(error){
+                console.log("Hubo un error al escribir el archivo: ",error);
+            }
+        }
+        deleteItems(this.route);
     }
 }
 
 const fs = require('fs');
+const data = new Container('./product.txt');
 
-const route = './product.txt';
-const data = fs.readFileSync(route, 'utf-8');
+// data.save(
+//     {
+//         title: 'Test', 
+//         price: 1250, 
+//         thumbnail: 'https://cdn3.iconfinder.com/data/icons/education-209/64/ruler-triangle-stationary-school-256.png'
+//     }).then(value => console.log(value)
+// );
 
-const data1 = new Container({title: 'Test', price: 1250, id: 1});
-// data1.save({title: 'Test', price: 1250});
+data.getById(2).then(value => console.log(value));
 
-// data1.getById(1)
+data.getAll().then(value => console.log(value));
+data.deleteById(1);
 
-data1.getAll()
-
-data1.deleteById(1)
-
-data1.deleteAll()
+// data.deleteAll();
